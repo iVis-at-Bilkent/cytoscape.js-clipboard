@@ -60,8 +60,7 @@
 
 
             function changeIds(jsons) {
-                if (jsons.length == 0)
-                    return [];
+                jsons = $.extend(true, [], jsons);
                 var oldIdToNewId = {};
                 for (var i = 0; i < jsons.length; i++) {
                     var json = jsons[i];
@@ -94,8 +93,6 @@
                 copy: function (eles, _id) {
                     var id = _id ? _id : getItemId();
                     eles.unselect();
-                    console.log(eles.jsons());
-                    console.log(eles.nodes().outgoers());
                     clipboard[id] = eles.not(eles.nodes().edgesTo(cy.elements().not(eles))).jsons();
                     return _instance;
                 },
@@ -119,6 +116,15 @@
                     return res;
                 }
             };
+
+            if (cy.undoRedo){
+                var ur = cy.undoRedo({}, true);
+                ur.action("paste", function (eles) {
+                    return eles.firstTime ? _instance.paste : eles.restore;
+                }, function (eles) {
+                    return eles.remove;
+                });
+            }
 
 
             return _instance; // chainability
