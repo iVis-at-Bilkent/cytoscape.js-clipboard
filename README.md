@@ -7,10 +7,47 @@ cytoscape-clipboard
 Adds copy-paste utilities to cytoscape.
 
 
+## API
+
+```javascript
+    var cy = cytoscape({...});
+
+    var cb = cy.clipboard(options);
+
+```
+
+
+`cy.clipboard(options)`
+Initializes extension & sets options.
+
+`cb.copy(eles [, id])`
+Copies eles and returns id of operation. If `id` is not specified, it will be assigned automatically.
+
+`cb.paste([id])`
+Pastes the copied elements which has `id`. If `id` is not specified, it will have the last operation's id.
+
+
+## Default Options
+```javascript
+            var options = {
+                clipboardSize: 0, // Size of clipboard. 0 means unlimited. If size is exceeded, first added item in clipboard will be removed.
+                shortcuts: {
+                    enabled: true, // Whether keyboard shortcuts are enabled
+                    undoable: true // and if undoRedo extension exists
+                }
+            };
+```
+
+
+## Default Undo Redo Actions
+`ur.do("paste"[, { id: idOfOperation }])` 
+Pastes operation. id is optional as is in `cb.paste()`
+
+
 ## Dependencies
 
  * Cytoscape.js ^x.y.z
- * <List your dependencies here please>
+ * cytoscape-undo-redo ^1.0.8 (optional)
 
 
 ## Usage instructions

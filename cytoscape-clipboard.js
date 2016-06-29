@@ -14,22 +14,32 @@
 
             var options = {
                 clipboardSize: 0,
-                keyboardShortcuts: true
+                shortcuts: {
+                    enabled: true,
+                    undoable: true
+                }
             };
 
             $.extend(true, options, opts);
 
-
+            var ur;
             var clipboard = {};
-            if (options.keyboardShortcuts)
+            if (options.shortcuts.enabled) {
+                var undoable = options.shortcuts.undoable && (cy.undoRedo ? true : false);
+                if (undoable)
+                    ur = cy.undoRedo({}, true);
+
                 document.addEventListener("keydown", function (e) {
                     if (e.ctrlKey)
                         if (e.which == 67) // CTRL + C
                             _instance.copy(cy.$(":selected"));
                         else if (e.which == 86) // CTRL + V
-                            _instance.paste();
+                            if (undoable)
+                                ur.do("paste");
+                            else
+                                _instance.paste();
                 });
-
+            }
 
             var counter = 0;
 
@@ -50,8 +60,6 @@
                 return last ? "item_" + counter : "item_" + ++counter;
             }
 
-            var cloneCounter = 0;
-
             function getCloneId(last) {
                 if (!last)
                     lastGuid = guid();
@@ -63,15 +71,14 @@
                 jsons = $.extend(true, [], jsons);
                 var oldIdToNewId = {};
                 for (var i = 0; i < jsons.length; i++) {
-                    var json = jsons[i];
+                    var jsonFirst = jsons[i];
                     var id = getCloneId();
-                    oldIdToNewId[json.data.id] = id;
-                    json.data.id = id;
+                    oldIdToNewId[jsonFirst.data.id] = id;
+                    jsonFirst.data.id = id;
                 }
 
-                for (var i = 0; i < jsons.length; i++) {
-                    var json = jsons[i];
-                    console.log(json);
+                for (var j = 0; j < jsons.length; j++) {
+                    var json = jsons[j];
                     var fields = ["source", "target", "parent"];
                     for (var k = 0; k < fields.length; k++) {
                         var field = fields[k];
@@ -93,12 +100,13 @@
                 copy: function (eles, _id) {
                     var id = _id ? _id : getItemId();
                     eles.unselect();
-                    clipboard[id] = eles.union(eles.descendants().union(eles.descendants().connectedEdges())).not(eles.nodes().edgesTo(cy.elements().not(eles))).jsons();
+                    eles = eles.union(eles.descendants().union(eles.descendants().connectedEdges()));
+                    clipboard[id] = eles.not(eles.nodes().edgesTo(cy.elements().not(eles))).jsons();
                     return id;
                 },
                 paste: function (_id) {
                     var id = _id ? _id : getItemId(true);
-                    var res = null;
+                    var res = cy.collection();
                     if (clipboard[id]) {
                         var newElesJsons = changeIds(clipboard[id]);
                         var nodes = $.grep(newElesJsons, function (ele) {
@@ -118,11 +126,13 @@
             };
 
             if (cy.undoRedo){
-                var ur = cy.undoRedo({}, true);
+                ur = cy.undoRedo({}, true);
                 ur.action("paste", function (eles) {
-                    return eles.firstTime ? _instance.paste : eles.restore;
+                    console.log("pasted");
+                    return eles.firstTime ? _instance.paste(eles.id) : eles.restore();
                 }, function (eles) {
-                    return eles.remove;
+                    console.log("undone");
+                    return eles.remove();
                 });
             }
 
