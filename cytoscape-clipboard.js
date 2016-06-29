@@ -106,8 +106,8 @@
                     var id = _id ? _id : getItemId();
                     eles.unselect();
                     var descs = eles.nodes().descendants();
-                    var nodes = eles.nodes().union(descs);
-                    var edges = nodes.edgesWith(nodes);
+                    var nodes = eles.nodes().union(descs).filter(":visible");
+                    var edges = nodes.edgesWith(nodes).filter(":visible");
 
                     clipboard[id] = { nodes: nodes.jsons(), edges: edges.jsons() };
                     return id;
