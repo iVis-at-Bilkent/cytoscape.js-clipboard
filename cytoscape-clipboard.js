@@ -93,8 +93,8 @@
                 copy: function (eles, _id) {
                     var id = _id ? _id : getItemId();
                     eles.unselect();
-                    clipboard[id] = eles.not(eles.nodes().edgesTo(cy.elements().not(eles))).jsons();
-                    return _instance;
+                    clipboard[id] = eles.union(eles.descendants().union(eles.descendants().connectedEdges())).not(eles.nodes().edgesTo(cy.elements().not(eles))).jsons();
+                    return id;
                 },
                 paste: function (_id) {
                     var id = _id ? _id : getItemId(true);
