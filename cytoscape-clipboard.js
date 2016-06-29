@@ -38,6 +38,10 @@
                                 ur.do("paste");
                             else
                                 _instance.paste();
+                        else if (e.which == 65){
+                            cy.elements().select();
+                            e.preventDefault();
+                        }
                 });
             }
 
