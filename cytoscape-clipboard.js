@@ -71,9 +71,9 @@
             }
 
 
+            var oldIdToNewId = {};
             function changeIds(jsons) {
                 jsons = $.extend(true, [], jsons);
-                var oldIdToNewId = {};
                 for (var i = 0; i < jsons.length; i++) {
                     var jsonFirst = jsons[i];
                     var id = getCloneId();
@@ -100,25 +100,25 @@
 
             }
 
+
             var _instance = {
                 copy: function (eles, _id) {
                     var id = _id ? _id : getItemId();
                     eles.unselect();
-                    eles = eles.union(eles.descendants().union(eles.descendants().connectedEdges()));
-                    clipboard[id] = eles.not(eles.nodes().edgesTo(cy.elements().not(eles))).jsons();
+                    var descs = eles.nodes().descendants();
+                    var nodes = eles.nodes().union(descs);
+                    var edges = nodes.edgesWith(nodes);
+
+                    clipboard[id] = { nodes: nodes.jsons(), edges: edges.jsons() };
                     return id;
                 },
                 paste: function (_id) {
                     var id = _id ? _id : getItemId(true);
                     var res = cy.collection();
                     if (clipboard[id]) {
-                        var newElesJsons = changeIds(clipboard[id]);
-                        var nodes = $.grep(newElesJsons, function (ele) {
-                            return ele.group == "nodes";
-                        });
-                        var edges = $.grep(newElesJsons, function (ele) {
-                            return ele.group == "edges";
-                        });
+                        var nodes = changeIds(clipboard[id].nodes);
+                        var edges = changeIds(clipboard[id].edges);
+                        oldIdToNewId = {};
                         cy.batch(function () {
                             res = cy.add(nodes).union(cy.add(edges));
                             res.select();
@@ -132,10 +132,8 @@
             if (cy.undoRedo){
                 ur = cy.undoRedo({}, true);
                 ur.action("paste", function (eles) {
-                    console.log("pasted");
                     return eles.firstTime ? _instance.paste(eles.id) : eles.restore();
                 }, function (eles) {
-                    console.log("undone");
                     return eles.remove();
                 });
             }
