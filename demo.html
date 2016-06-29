@@ -81,7 +81,9 @@
 					]
 				}
 			});
-			var ur = cy.undoRedo();
+			var ur = cy.undoRedo({
+				undoableDrag: false
+			});
 			var cb = cy.clipboard();
 
 		});
