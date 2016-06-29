@@ -61,7 +61,7 @@
             var lastGuid;
 
             function getItemId(last) {
-                return last ? "item_" + counter : "item_" + ++counter;
+                return last ? "item_" + counter : "item_" + (++counter);
             }
 
             function getCloneId(last) {
