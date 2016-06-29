@@ -96,7 +96,7 @@
                     eles.unselect();
                     console.log(eles.jsons());
                     console.log(eles.nodes().outgoers());
-                    clipboard[id] = eles.jsons();
+                    clipboard[id] = eles.not(eles.nodes().edgesTo(cy.elements().not(eles))).jsons();
                     return _instance;
                 },
                 paste: function (_id) {
