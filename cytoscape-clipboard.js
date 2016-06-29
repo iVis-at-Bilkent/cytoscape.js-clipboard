@@ -32,17 +32,25 @@
 
 
             var counter = 0;
-
+            function guid() {
+                function s4() {
+                    return Math.floor((1 + Math.random()) * 0x10000)
+                        .toString(16)
+                        .substring(1);
+                }
+                return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+                    s4() + '-' + s4() + s4() + s4();
+            }
+            var lastGuid;
             function getItemId(last) {
                 return last ? "item_" + counter : "item_" + ++counter;
             }
 
             var cloneCounter = 0;
-            function getCloneId(incr) {
-                if (incr)
-                    cloneCounter++;
-
-                return "clone_"+ cloneCounter;
+            function getCloneId(last) {
+                if (!last)
+                    lastGuid = guid();
+                return lastGuid;
             }
 
 
@@ -52,7 +60,7 @@
                 var oldIdToNewId = {};
                 for (var i = 0; i < jsons.length; i++){
                     var json = jsons[i];
-                    var id = getCloneId(true);
+                    var id = getCloneId();
                     oldIdToNewId[json.data.id] = id;
                     json.data.id = id;
                 }
@@ -82,6 +90,7 @@
                     var id = _id ? _id : getItemId();
                     eles.unselect();
                     console.log(eles.jsons());
+                    console.log(eles.nodes().outgoers());
                     clipboard[id] = eles.jsons();
                     return _instance;
                 },
@@ -94,10 +103,11 @@
                         var edges = $.grep(newElesJsons, function (ele) {
                             return ele.group == "edges";
                         });
-                        cy.startBatch();
-                        var res = cy.add(nodes);
-                        cy.endBatch();
-                        res.select();
+                        var res;
+                        cy.batch(function () {
+                            res = cy.add(nodes).union(cy.add(edges));
+                            res.select();
+                        });
                         return res;
                     }
                 };
