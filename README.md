@@ -77,29 +77,6 @@ require(['cytoscape', 'cytoscape-clipboard'], function( cytoscape, clipboard ){
 Plain HTML/JS has the extension registered for you automatically, because no `require()` is needed.
 
 
-## API
-
-Please briefly describe your API here:
-
-```js
-cy.clipboard({
-  foo: 'bar', // some option that does this
-  baz: 'bat' // some options that does that
-  // ... and so on
-});
-```
-
-Or maybe if you have a collection extension:
-
-```js
-cy.elements().test({
-  foo: 'bar', // some option that does this
-  baz: 'bat' // some options that does that
-  // ... and so on
-});
-```
-
-
 ## Publishing instructions
 
 This project is set up to automatically be published to npm and bower.  To publish:
