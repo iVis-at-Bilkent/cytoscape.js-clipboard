@@ -86,8 +86,11 @@
                     var fields = ["source", "target", "parent"];
                     for (var k = 0; k < fields.length; k++) {
                         var field = fields[k];
-                        if (json.data[field])
+                        if (json.data[field] && oldIdToNewId[json.data[field]]){
                             json.data[field] = oldIdToNewId[json.data[field]];
+                            if (field == "parent")
+                                console.log(json.data[field], oldIdToNewId[json.data[field]]);
+                        }
 
                     }
                     if (json.position.x) {
