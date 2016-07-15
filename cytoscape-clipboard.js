@@ -89,7 +89,7 @@
                         ur = cy.undoRedo({}, true);
 
                     document.addEventListener("keydown", function (e) {
-                        if (e.ctrlKey)
+                        if (e.ctrlKey && e.target.nodeName === 'BODY')
                             if (e.which == 67) // CTRL + C
                                 _instance.copy(cy.$(":selected"));
                             else if (e.which == 86) // CTRL + V
