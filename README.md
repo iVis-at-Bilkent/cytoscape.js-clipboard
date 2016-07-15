@@ -46,7 +46,7 @@ Pastes operation. id is optional as is in `cb.paste()`
 
 ## Dependencies
 
- * Cytoscape.js ^x.y.z
+ * Cytoscape.js ^2.6.12
  * cytoscape-undo-redo ^1.0.8 (optional)
 
 
