@@ -30,11 +30,7 @@ Pastes the copied elements which has `id`. If `id` is not specified, it will hav
 ## Default Options
 ```javascript
             var options = {
-                clipboardSize: 0, // Size of clipboard. 0 means unlimited. If size is exceeded, first added item in clipboard will be removed.
-                shortcuts: {
-                    enabled: true, // Whether keyboard shortcuts are enabled
-                    undoable: true // and if undoRedo extension exists
-                }
+                clipboardSize: 0
             };
 ```
 
