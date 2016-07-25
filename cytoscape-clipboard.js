@@ -15,11 +15,7 @@
             var cy = this;
 
             var options = {
-                clipboardSize: 0,
-                shortcuts: {
-                    enabled: true,
-                    undoable: true
-                }
+                clipboardSize: 0
             };
 
             $.extend(true, options, opts);
@@ -82,27 +78,7 @@
             if (!initialized) {
                 initialized = true;
                 var ur;
-                var clipboard = {};
-                if (options.shortcuts.enabled) {
-                    var undoable = options.shortcuts.undoable && (cy.undoRedo ? true : false);
-                    if (undoable)
-                        ur = cy.undoRedo({}, true);
-
-                    document.addEventListener("keydown", function (e) {
-                        if (e.ctrlKey && e.target.nodeName === 'BODY')
-                            if (e.which == 67) // CTRL + C
-                                _instance.copy(cy.$(":selected"));
-                            else if (e.which == 86) // CTRL + V
-                                if (undoable)
-                                    ur.do("paste");
-                                else
-                                    _instance.paste();
-                            else if (e.which == 65) {
-                                cy.elements().select();
-                                e.preventDefault();
-                            }
-                    });
-                }
+                var clipboard = {}; 
 
                 _instance = {
                     copy: function (eles, _id) {
