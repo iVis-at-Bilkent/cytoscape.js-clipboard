@@ -10,7 +10,6 @@
 
 
         var _instance;
-        var initialized = false;
         cytoscape('core', 'clipboard', function (opts) {
             var cy = this;
 
@@ -20,6 +19,14 @@
 
             $.extend(true, options, opts);
 
+
+            function getScratch() {
+                if (!cy.scratch("_clipboard")) {
+                    cy.scratch("_clipboard", { });
+
+                }
+                return cy.scratch("_clipboard");
+            }
 
             var counter = 0;
 
@@ -75,10 +82,10 @@
 
             }
 
-            if (!initialized) {
-                initialized = true;
+            if (!getScratch().isInitialized) {
+                getScratch().isInitialized = true;
                 var ur;
-                var clipboard = {}; 
+                var clipboard = {};
 
                 _instance = {
                     copy: function (eles, _id) {
