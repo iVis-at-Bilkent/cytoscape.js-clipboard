@@ -4,8 +4,7 @@ cytoscape-clipboard
 
 ## Description
 
-Adds copy-paste utilities to cytoscape.
-
+A Cytoscape.js extension to provide copy-paste utilities, distributed under [The MIT License](https://opensource.org/licenses/MIT).
 
 ## API
 
