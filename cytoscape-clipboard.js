@@ -13,13 +13,6 @@
         cytoscape('core', 'clipboard', function (opts) {
             var cy = this;
 
-            var options = {
-                clipboardSize: 0
-            };
-
-            $.extend(true, options, opts);
-
-
             function getScratch() {
                 if (!cy.scratch("_clipboard")) {
                     cy.scratch("_clipboard", { });
@@ -54,7 +47,7 @@
             var oldIdToNewId = {};
 
             function changeIds(jsons) {
-                jsons = $.extend(true, [], jsons);
+                jsons = [].concat(jsons);
                 for (var i = 0; i < jsons.length; i++) {
                     var jsonFirst = jsons[i];
                     var id = getCloneId();

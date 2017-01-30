@@ -11,13 +11,12 @@ A Cytoscape.js extension to provide copy-paste utilities, distributed under [The
 ```javascript
     var cy = cytoscape({...});
 
-    var cb = cy.clipboard(options);
+    var cb = cy.clipboard();
 
 ```
 
 
-`cy.clipboard(options)`
-Initializes extension & sets options.
+`cy.clipboard()`
 
 `cb.copy(eles [, id])`
 Copies eles and returns id of operation. If `id` is not specified, it will be assigned automatically.
@@ -25,17 +24,8 @@ Copies eles and returns id of operation. If `id` is not specified, it will be as
 `cb.paste([id])`
 Pastes the copied elements which has `id`. If `id` is not specified, it will have the last operation's id.
 
-
-## Default Options
-```javascript
-            var options = {
-                clipboardSize: 0
-            };
-```
-
-
 ## Default Undo Redo Actions
-`ur.do("paste"[, { id: idOfOperation }])` 
+`ur.do("paste"[, { id: idOfOperation }])`
 Pastes operation. id is optional as is in `cb.paste()`
 
 
