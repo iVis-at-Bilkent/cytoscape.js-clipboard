@@ -41,7 +41,8 @@ Pastes operation. id is optional as is in `cb.paste()`
 
 ## Dependencies
 
- * Cytoscape.js ^2.6.12
+ * Cytoscape.js ^2.6.12 || ^3.0.0
+ * jQuery ^1.3.2 || ^2.0.0 || ^3.0.0
  * cytoscape-undo-redo ^1.0.8 (optional)
 
 
@@ -57,9 +58,10 @@ Download the library:
 CommonJS:
 ```js
 var cytoscape = require('cytoscape');
+var jquery = require('jquery');
 var clipboard = require('cytoscape-clipboard');
 
-clipboard( cytoscape ); // register extension
+clipboard( cytoscape, jquery ); // register extension
 ```
 
 AMD:
