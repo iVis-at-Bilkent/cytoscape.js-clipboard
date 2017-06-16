@@ -14,7 +14,11 @@
             var cy = this;
 
             var options = {
-                clipboardSize: 0
+                clipboardSize: 0,
+                beforeCopy: null,
+                afterCopy: null,
+                beforePaste: null,
+                afterPaste: null
             };
 
             $.extend(true, options, opts);
@@ -95,12 +99,21 @@
                         var nodes = eles.nodes().union(descs).filter(":visible");
                         var edges = nodes.edgesWith(nodes).filter(":visible");
 
+                        if(options.beforeCopy) {
+                            options.beforeCopy(nodes.union(edges));
+                        }
                         clipboard[id] = {nodes: nodes.jsons(), edges: edges.jsons()};
+                        if(options.afterCopy) {
+                            options.afterCopy(clipboard[id]);
+                        }
                         return id;
                     },
                     paste: function (_id) {
                         var id = _id ? _id : getItemId(true);
                         var res = cy.collection();
+                        if(options.beforePaste) {
+                            options.beforePaste(clipboard[id]);
+                        }
                         if (clipboard[id]) {
                             var nodes = changeIds(clipboard[id].nodes);
                             var edges = changeIds(clipboard[id].edges);
@@ -110,6 +123,9 @@
                                 res.select();
                             });
 
+                        }
+                        if(options.afterPaste) {
+                            options.afterPaste(res);
                         }
                         return res;
                     }

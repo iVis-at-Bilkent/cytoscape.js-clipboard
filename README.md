@@ -29,7 +29,26 @@ Pastes the copied elements which has `id`. If `id` is not specified, it will hav
 ## Default Options
 ```javascript
             var options = {
-                clipboardSize: 0
+                clipboardSize: 0,
+
+                // The following 4 options allow the user to provide custom behavior to
+                // the extension. They can be used to maintain consistency of some data
+                // when elements are duplicated.
+                // These 4 options are set to null by default. The function prototypes
+                // are provided below for explanation purpose only.
+
+                // Function executed on the collection of elements being copied, before
+                // they are serialized in the clipboard
+                beforeCopy: function(eles) {},
+                // Function executed on the clipboard just after the elements are copied.
+                // clipboard is of the form: {nodes: json, edges: json}
+                afterCopy: function(clipboard) {},
+                // Function executed on the clipboard right before elements are pasted,
+                // when they are still in the clipboard.
+                beforePaste: function(clipboard) {},
+                // Function executed on the collection of pasted elements, after they
+                // are pasted.
+                afterPaste: function(eles) {}
             };
 ```
 
