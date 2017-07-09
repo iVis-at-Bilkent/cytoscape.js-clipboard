@@ -68,7 +68,7 @@
 
                 for (var j = 0; j < jsons.length; j++) {
                     var json = jsons[j];
-                    var fields = ["source", "target", "parent", 'portsource', 'porttarget'];
+                    var fields = ["source", "target", "parent"];
                     for (var k = 0; k < fields.length; k++) {
                         var field = fields[k];
                         if (json.data[field] && oldIdToNewId[json.data[field]])
