@@ -6,6 +6,10 @@ cytoscape-clipboard
 
 A Cytoscape.js extension to provide copy-paste utilities, distributed under [The MIT License](https://opensource.org/licenses/MIT).
 
+## Demo
+
+Click [here](https://rawgit.com/iVis-at-Bilkent/cytoscape.js-clipboard/master/demo.html) for demo
+
 ## API
 
 ```javascript
