@@ -9,8 +9,8 @@
         } // can't register if cytoscape unspecified
 
 
-        var _instance;
         cytoscape('core', 'clipboard', function (opts) {
+
             var cy = this;
 
             var options = {
@@ -31,6 +31,9 @@
                 }
                 return cy.scratch("_clipboard");
             }
+
+            // get the scratchpad reserved for this extension on cy
+            var scratchPad = getScratch();
 
             var counter = 0;
 
@@ -86,12 +89,12 @@
 
             }
 
-            if (!getScratch().isInitialized) {
-                getScratch().isInitialized = true;
+            if (!scratchPad.isInitialized) {
+                scratchPad.isInitialized = true;
                 var ur;
                 var clipboard = {};
 
-                _instance = {
+                scratchPad.instance = {
                     copy: function (eles, _id) {
                         var id = _id ? _id : getItemId();
                         eles.unselect();
@@ -134,14 +137,15 @@
                 if (cy.undoRedo) {
                     ur = cy.undoRedo({}, true);
                     ur.action("paste", function (eles) {
-                        return eles.firstTime ? _instance.paste(eles.id) : eles.restore();
+                        return eles.firstTime ? scratchPad.instance.paste(eles.id) : eles.restore();
                     }, function (eles) {
                         return eles.remove();
                     });
                 }
 
             }
-            return _instance; // chainability
+
+            return scratchPad.instance; // return the extension instance
         });
 
     };
