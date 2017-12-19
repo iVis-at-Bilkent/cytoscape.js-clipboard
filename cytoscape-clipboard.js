@@ -2,9 +2,9 @@
     'use strict';
 
     // registers the extension on a cytoscape lib ref
-    var register = function (cytoscape, $) {
+    var register = function (cytoscape) {
 
-        if (!cytoscape || !$) {
+        if (!cytoscape) {
             return;
         } // can't register if cytoscape unspecified
 
@@ -12,13 +12,6 @@
         var _instance;
         cytoscape('core', 'clipboard', function (opts) {
             var cy = this;
-
-            var options = {
-                clipboardSize: 0
-            };
-
-            $.extend(true, options, opts);
-
 
             function getScratch() {
                 if (!cy.scratch("_clipboard")) {
@@ -54,7 +47,7 @@
             var oldIdToNewId = {};
 
             function changeIds(jsons) {
-                jsons = $.extend(true, [], jsons);
+                jsons = [].concat(jsons);
                 for (var i = 0; i < jsons.length; i++) {
                     var jsonFirst = jsons[i];
                     var id = getCloneId();
@@ -140,8 +133,8 @@
         });
     }
 
-    if (typeof cytoscape !== 'undefined' && typeof jQuery !== 'undefined') { // expose to global cytoscape (i.e. window.cytoscape)
-        register(cytoscape, jQuery);
+    if (typeof cytoscape !== 'undefined') { // expose to global cytoscape (i.e. window.cytoscape)
+        register(cytoscape);
     }
 
 })();

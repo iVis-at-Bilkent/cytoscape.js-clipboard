@@ -4,17 +4,18 @@
 
 <head>
 	<title>cytoscape-clipboard demo</title>
-
+	<link href="https://cdn.rawgit.com/ivis-at-bilkent/cytoscape.js-context-menus/master/cytoscape-context-menus.css" rel="stylesheet" type="text/css" />
 	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
 	<script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+	<script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
 
-	<script src="http://cytoscape.github.io/cytoscape.js/api/cytoscape.js-latest/cytoscape.js"></script>
-
+	<script src="https://cdn.rawgit.com/ivis-at-bilkent/cytoscape.js-context-menus/master/cytoscape-context-menus.js"></script>
 	<!-- for testing with local version of cytoscape.js -->
 	<!--<script src="../cytoscape.js/build/cytoscape.js"></script>-->
 
 	<script src="src/cytoscape-undo-redo.js"></script>
 	<script src="cytoscape-clipboard.js"></script>
+	<script src="cytoscape-edge-bend-editing.js"></script>
 
 	<style>
 		body {
@@ -71,7 +72,7 @@
 						{ data: { id: 'j', name: 'Jerry' } },
 						{ data: { id: 'e', name: 'Elaine' } },
 						{ data: { id: 'k', name: 'Kramer', parent: "e" } },
-						{ data: { id: 'g', name: 'George' } }
+						{ data: { id: 'g', name: 'George' , parent:"e"} }
 					],
 					edges: [
 						{ data: { source: 'j', target: 'e' } },
@@ -84,6 +85,17 @@
 			var ur = cy.undoRedo({
 				undoableDrag: false
 			});
+			cy.edgeBendEditing({
+					      // this function specifies the positions of bend points
+					      bendPositionsFunction: function (ele) {
+						          return ele.data('bendPointPositions');
+								        },
+										      // whether the bend editing operations are undoable (requires cytoscape-undo-redo.js)
+											        // title of remove bend point menu item
+											        removeBendMenuItemTitle: "Delete Bend Point",
+													      // whether to initilize bend points on creation of this extension automatically
+													      initBendPointsAutomatically: false
+														      }); 
 			var cb = cy.clipboard();
 
 			document.addEventListener("keydown", function (e) {
