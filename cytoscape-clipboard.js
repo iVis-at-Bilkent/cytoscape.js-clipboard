@@ -13,6 +13,14 @@
 
             var cy = this;
 
+            //Global variables to hold x and y coordinates in case of pasting
+            var mouseX, mouseY;
+            cy.on('mousemove', function onmousemove (e) {
+                mouseX = e.position.x || e.cyPosition.x;
+                mouseY = e.position.y || e.cyPosition.y;
+            });
+
+
             var options = {
                 clipboardSize: 0,
                 beforeCopy: null,
@@ -69,6 +77,42 @@
                     jsonFirst.data.id = id;
                 }
 
+                //Paste the elements centered at the mouse location
+                var topLeftX, topLeftY;
+                var bottomRightX, bottomRightY;
+                var centerX, centerY;
+                var diffX, diffY;
+                //Checks only for nodes
+                if (jsons[0] !== undefined && jsons[0].position.x)
+                {
+                    topLeftX = jsons[0].position.x;
+                    topLeftY = jsons[0].position.y;
+                    bottomRightX = jsons[0].position.x;
+                    bottomRightY = jsons[0].position.y;
+
+                    for (var k = 1; k < jsons.length; k++) {
+                        var ele = jsons[k];
+
+                        if (ele.position.x < topLeftX) {
+                            topLeftX = ele.position.x;
+                        }
+                        if (ele.position.y < topLeftY) {
+                            topLeftY = ele.position.y;
+                        }
+                        if (ele.position.x > bottomRightX) {
+                            bottomRightX = ele.position.x;
+                        }
+                        if (ele.position.y > bottomRightY) {
+                            bottomRightY = ele.position.y;
+                        }
+                    }
+                    centerX = (topLeftX+bottomRightX)/2;
+                    centerY = (topLeftY+bottomRightY)/2;
+
+                    diffX = mouseX -centerX;
+                    diffY = mouseY - centerY;
+                }
+
                 for (var j = 0; j < jsons.length; j++) {
                     var json = jsons[j];
                     var fields = ["source", "target", "parent"];
@@ -77,11 +121,10 @@
                         if (json.data[field] && oldIdToNewId[json.data[field]])
                             json.data[field] = oldIdToNewId[json.data[field]];
 
-
                     }
                     if (json.position.x) {
-                        json.position.x += 50;
-                        json.position.y += 50;
+                        json.position.x += diffX;
+                        json.position.y += diffY;
                     }
                 }
 
