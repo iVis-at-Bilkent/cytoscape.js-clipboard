@@ -16,8 +16,9 @@
             //Global variables to hold x and y coordinates in case of pasting
             var mouseX, mouseY;
             cy.on('mousemove', function onmousemove (e) {
-                mouseX = e.position.x || e.cyPosition.x;
-                mouseY = e.position.y || e.cyPosition.y;
+                var pos = e.position || e.cyPosition;
+                mouseX = pos.x;
+                mouseY = pos.y;
             });
 
 
