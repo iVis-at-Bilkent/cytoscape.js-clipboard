@@ -69,7 +69,7 @@
 
             var oldIdToNewId = {};
 
-            function changeIds(jsons) {
+            function changeIds(jsons, pasteAtMouseLoc) {
                 jsons = $.extend(true, [], jsons);
                 for (var i = 0; i < jsons.length; i++) {
                     var jsonFirst = jsons[i];
@@ -124,8 +124,15 @@
 
                     }
                     if (json.position.x) {
-                        json.position.x += diffX;
-                        json.position.y += diffY;
+                        if (pasteAtMouseLoc == false) {
+                            json.position.x += 50;
+                            json.position.y += 50;
+
+                        }
+                        else {
+                            json.position.x += diffX;
+                            json.position.y += diffY;
+                        }
                     }
                 }
 
@@ -155,14 +162,14 @@
                         }
                         return id;
                     },
-                    paste: function (_id) {
+                    paste: function (_id, pasteAtMouseLoc) {
                         var id = _id ? _id : getItemId(true);
                         var res = cy.collection();
                         if(options.beforePaste) {
                             options.beforePaste(clipboard[id]);
                         }
                         if (clipboard[id]) {
-                            var nodes = changeIds(clipboard[id].nodes);
+                            var nodes = changeIds(clipboard[id].nodes, pasteAtMouseLoc);
                             var edges = changeIds(clipboard[id].edges);
                             oldIdToNewId = {};
                             cy.batch(function () {
@@ -181,7 +188,7 @@
                 if (cy.undoRedo) {
                     ur = cy.undoRedo({}, true);
                     ur.action("paste", function (eles) {
-                        return eles.firstTime ? scratchPad.instance.paste(eles.id) : eles.restore();
+                        return eles.firstTime ? scratchPad.instance.paste(eles.id, eles.pasteAtMouseLoc) : eles.restore();
                     }, function (eles) {
                         return eles.remove();
                     });
