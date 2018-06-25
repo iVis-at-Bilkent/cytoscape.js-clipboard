@@ -181,6 +181,7 @@
                         if(options.afterPaste) {
                             options.afterPaste(res);
                         }
+                        cy.trigger('pasteClonedElements');
                         return res;
                     }
                 };
