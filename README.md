@@ -33,7 +33,6 @@ Pastes the copied elements which has `id`. If `id` is not specified, it will hav
 ## Default Options
 ```javascript
             var options = {
-                clipboardSize: 0,
 
                 // The following 4 options allow the user to provide custom behavior to
                 // the extension. They can be used to maintain consistency of some data
