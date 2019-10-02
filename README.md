@@ -8,7 +8,7 @@ A Cytoscape.js extension to provide copy-paste utilities, distributed under [The
 
 ## Demo
 
-Click [here](https://rawgit.com/iVis-at-Bilkent/cytoscape.js-clipboard/master/demo.html) for demo
+Click [here](https://raw.githack.com/iVis-at-Bilkent/cytoscape.js-clipboard/unstable/demo.html) for demo
 
 ## API
 
@@ -33,7 +33,6 @@ Pastes the copied elements which has `id`. If `id` is not specified, it will hav
 ## Default Options
 ```javascript
             var options = {
-                clipboardSize: 0,
 
                 // The following 4 options allow the user to provide custom behavior to
                 // the extension. They can be used to maintain consistency of some data

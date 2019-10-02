@@ -23,7 +23,6 @@
 
 
             var options = {
-                clipboardSize: 0,
                 beforeCopy: null,
                 afterCopy: null,
                 beforePaste: null,
