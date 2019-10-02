@@ -8,7 +8,7 @@ A Cytoscape.js extension to provide copy-paste utilities, distributed under [The
 
 ## Demo
 
-Click [here](https://rawgit.com/iVis-at-Bilkent/cytoscape.js-clipboard/master/demo.html) for demo
+Click [here](https://raw.githack.com/iVis-at-Bilkent/cytoscape.js-clipboard/unstable/demo.html) for demo
 
 ## API
 
