@@ -8,7 +8,7 @@
 	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
 	<script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
 
-	<script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+	<script src="https://unpkg.com/cytoscape@3.10.1/dist/cytoscape.min.js"></script>
 
 	<!-- for testing with local version of cytoscape.js -->
 	<!--<script src="../cytoscape.js/build/cytoscape.js"></script>-->
@@ -96,6 +96,11 @@
 						cy.elements().select();
 						e.preventDefault();
 					}
+					else if(e.which==88){
+						//cy.clipboard().copy(cy.$(":selected"));
+						cy.clipboard().cut(cy.$(":selected"));
+						
+					}	
 			});
 		});
 	</script>
@@ -106,7 +111,7 @@
 
  <b style="color: darkblue">CTRL+Z</b> to undo, <b style="color: darkblue">CTRL+Y</b> to redo <br/>
  <b style="color: darkred">CTRL+C</b> to copy, <b style="color: darkred">CTRL+V</b> to paste
-
+ <b style="color: rgb(236, 135, 206)">CTRL+X</b> to cut
 <div id="cy"></div>
 
 </body>
