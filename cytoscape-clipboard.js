@@ -14,7 +14,7 @@
             var cy = this;
 
 
-            //Global variables to hold x and y coordinates in case of pasting
+            //Global variables to hold x and y coordinates in case of pasting//
             var mouseX, mouseY;
             cy.on('mousemove', function onmousemove(e) {
                 var pos = e.position || e.cyPosition;
