@@ -8,7 +8,7 @@
 	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
 	<script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
 
-	<script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+	<script src=" https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
 
 	<!-- for testing with local version of cytoscape.js -->
 	<!--<script src="../cytoscape.js/build/cytoscape.js"></script>-->
@@ -37,6 +37,8 @@
 	</style>
 
 	<script>
+		var cuted=false;
+		var paseCuted=true;
 
 		document.addEventListener('DOMContentLoaded', function(){
 
@@ -85,17 +87,41 @@
 				undoableDrag: false
 			});
 			var cb = cy.clipboard();
-
+		
 			document.addEventListener("keydown", function (e) {
 				if (e.ctrlKey && e.target.nodeName === 'BODY')
 					if (e.which == 67) // CTRL + C
+					{
 						cy.clipboard().copy(cy.$(":selected"));
-					else if (e.which == 86) // CTRL + V
+						cuted=false;
+						paseCuted=true;
+					}
+					else if (e.which == 86 & cuted==true & paseCuted==true){ // CTRL + V
 							ur.do("paste");
+							cuted=false;
+							paseCuted=false;
+					}
+					else if (e.which == 86 & paseCuted==true){ // CTRL + V
+							ur.do("paste");
+							console.log("paseing")
+							console.log(paseCuted)
+							cuted=false;
+							paseCuted=true;
+					}
 					else if (e.which == 65) {
 						cy.elements().select();
 						e.preventDefault();
+						cuted=false;
+						paseCuted=true;
 					}
+					else if(e.which==88){ // CTRL + X //
+						
+						ur.do("cut");
+						
+						cuted=true;
+						paseCuted=true;
+						
+					}	
 			});
 		});
 	</script>
@@ -104,9 +130,11 @@
 <body>
 <h1>cytoscape-clipboard demo</h1>
 
- <b style="color: darkblue">CTRL+Z</b> to undo, <b style="color: darkblue">CTRL+Y</b> to redo <br/>
- <b style="color: darkred">CTRL+C</b> to copy, <b style="color: darkred">CTRL+V</b> to paste
 
+ <b style="color: darkblue">CTRL+Z</b> to undo, <b style="color: darkblue">CTRL+Y</b> to redo <br/>
+ <b style="color: darkred">CTRL+X</b> to cut
+ <b style="color: darkred">CTRL+C</b> to copy, <b style="color: darkred">CTRL+V</b> to paste
+ 
 <div id="cy"></div>
 
 </body>
