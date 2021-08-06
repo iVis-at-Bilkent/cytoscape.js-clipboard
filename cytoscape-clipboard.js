@@ -26,9 +26,7 @@
                 beforeCopy: null,
                 afterCopy: null,
                 beforePaste: null,
-                afterPaste: null,
-                afterCut: null,
-                beforeCut:null
+                afterPaste: null
             };
 
             $.extend(true, options, opts);
@@ -150,7 +148,6 @@
                     copy: function (eles, _id) {
                         var id = _id ? _id : getItemId();
                         eles.unselect();
-                        
                         var descs = eles.nodes().descendants();
                         var nodes = eles.nodes().union(descs).filter(":visible");
                         var edges = nodes.edgesWith(nodes).filter(":visible");
@@ -185,21 +182,6 @@
                         }
                         cy.trigger('pasteClonedElements');
                         return res;
-                    },
-                    
-                    cut: function (eles, _id) {
-                        console.log("here")
-                        
-                        if(options.beforeCut) {
-                            options.beforeCut(nodes.union(edges));
-                        }
-                        cy.clipboard().copy(cy.$(":selected"));
-                        eles.remove();
-
-                        if(options.afterCut) {
-                            options.afterCut(clipboard[id]);
-                        }
-                        
                     }
                 };
 
