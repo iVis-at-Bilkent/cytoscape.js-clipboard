@@ -80,8 +80,10 @@
 						{ data: { source: 'j', target: 'k' } },
 						{ data: { source: 'j', target: 'g' } },
 						{ data: { source: 'k', target: 'g' } }
-					]
-				}
+					],
+					
+				},
+
 			});
 			var ur = cy.undoRedo({
 				undoableDrag: false
@@ -91,10 +93,11 @@
 			document.addEventListener("keydown", function (e) {
 				if (e.ctrlKey && e.target.nodeName === 'BODY')
 					if (e.which == 67) // CTRL + C
-					{
-						cy.clipboard().copy(cy.$(":selected"));
+					{   
 						cuted=false;
 						paseCuted=true;
+						cy.clipboard().copy(cy.$(":selected"));
+						
 					}
 					else if (e.which == 86 & cuted==true & paseCuted==true){ // CTRL + V
 							ur.do("paste");
@@ -109,10 +112,11 @@
 							paseCuted=true;
 					}
 					else if (e.which == 65) {
-						cy.elements().select();
-						e.preventDefault();
 						cuted=false;
 						paseCuted=true;
+						cy.elements().select();
+						e.preventDefault();
+						
 					}
 					else if(e.which==88){ // CTRL + X //
 						
