@@ -7,7 +7,7 @@
         if (!cytoscape || !$) {
             return;
         } // can't register if cytoscape unspecified
-
+        
 
         cytoscape('core', 'clipboard', function (opts) {
 
@@ -15,14 +15,30 @@
 
 
             //Global variables to hold x and y coordinates in case of pasting//
-            var mouseX, mouseY;
+            var mouseX, mouseY, hoveringNode,clickedNode,cutedNode;
+            var cuted=false;
+		    var pasteCuted=true;
+           
             cy.on('mousemove', function onmousemove(e) {
                 var pos = e.position || e.cyPosition;
                 mouseX = pos.x;
                 mouseY = pos.y;
+                
+               
             });
-
-
+             //nodes that mouse is on
+             cy.nodes().on('mouseover',  function onmouseover(e) {
+                hoveringNode=e.target;
+             
+             });
+              //update when a mouse is not on it
+             cy.nodes().on('mouseout',  function onmouseout(e) {
+                hoveringNode=null;
+             });
+             //update when a node is clicked
+             cy.nodes().on('click',  function clk(e) {
+                clickedNode=e.target;
+             });
             var options = {
                 beforeCopy: null,
                 afterCopy: null,
@@ -122,33 +138,10 @@
                     diffY = mouseY - centerY;
                 }
 
-
-               if(cuted) {
+                
+               if(cuted ) {
                    var visibleNodes = cy.$(":visible");
-
                    
-
-                   var inside = false;
-                   var hoveringNode = null;
-
-                   visibleNodes.map((node) => {
-                       var posX = node.position().x;
-                       var posY = node.position().y;
-                       
-                    if (cy.$(":selected").id()!=undefined) {
-
-                        inside = true;
-                        hoveringNode = cy.$(":selected");
-                    }
-                    else if (mouseX < posX+ 50 && mouseX > posX - 50 &&
-                        mouseY < posY + 50 && mouseY > posY- 50) {
-    
-
-                           inside = true;
-                           hoveringNode = node;
-                       }
-                     
-                   })
                }
 
 
@@ -162,11 +155,26 @@
 
                     }
 
-                    if(inside) {
-                        json.data["parent"] = hoveringNode.id();
-                    }
+                        if (cuted && hoveringNode!=null  ){
+                               
+                                if(json.data["parent"] == null ){
+                                  
+                                    json.data["parent"] = hoveringNode.id();
+                                 
+                                }
+                            
+                            else if(json.data["parent"] != null && cutedNode.id()==json.data.id ){
+                                   
+                                    json.data["parent"] = hoveringNode.id();
+                                  
+                                    }
+                            }
+                        else if (cuted && hoveringNode==null){
+                         
+                            if (cutedNode.id()==json.data.id){
+                             json.data["parent"]=null;}
 
-
+                        }
                     if (json.position.x) {
                         if (pasteAtMouseLoc == false) {
                             json.position.x += 50;
@@ -178,7 +186,7 @@
                         }
                     }
                 }
-
+                
                 return jsons;
 
             }
@@ -190,10 +198,11 @@
 
                 scratchPad.instance = {
                     copy: function (eles, _id) {
+                        cy.clipboard().mouseForsync(cy.$(":selected"));
+                        
+                        cuted=false;
+                        pasteCuted=true;
                         var id = _id ? _id : getItemId();
-                 
-                       
-
                         var descs = eles.nodes().descendants();
                         var nodes = eles.nodes().union(descs).filter(":visible");
                         var edges = nodes.edgesWith(nodes).filter(":visible");
@@ -205,51 +214,65 @@
                         if (options.afterCopy) {
                             options.afterCopy(clipboard[id]);
                         }
-                        
+                        cy.clipboard().mouseForsync(cy.$(":selected"));
                         eles.unselect();
+                        
                         
                         return id;
                     },
                     paste: function (_id, pasteAtMouseLoc) {
-                        
-                        var id = _id ? _id : getItemId(true);
-                        var res = cy.collection();
-                        if (options.beforePaste) {
-                            options.beforePaste(clipboard[id]);
+                        cy.clipboard().mouseForsync(cy.$(":selected"));
+                        if(pasteCuted==true){
+                            var id = _id ? _id : getItemId(true);
+                            var res = cy.collection();
+                            if (options.beforePaste) {
+                                options.beforePaste(clipboard[id]);
+                            }
+
+
+
+                            if (clipboard[id]) {
+                                
+
+                                var nodes = changeIds(clipboard[id].nodes, pasteAtMouseLoc, cuted);
+                                var edges = changeIds(clipboard[id].edges, pasteAtMouseLoc, cuted);
+
+                                oldIdToNewId = {};
+                                cy.batch(function () {
+                                    res = cy.add(nodes).union(cy.add(edges));
+                                    res.select();
+                                });
+
+                            
+                            }
+                            if (options.afterPaste) {
+                                options.afterPaste(res);
+                            }
+                            cy.trigger('pasteClonedElements');
+                            res.unselect();
+                            if (cuted==true & pasteCuted==true){
+                                cuted=false;
+                                pasteCuted=false;
+
+                            }
+                            else if (pasteCuted==true){
+
+                                cuted=false;
+                                pasteCuted=true;
+                            }
+                            cy.clipboard().mouseForsync(cy.$(":selected"));
+                            return res;
                         }
+                        else{
 
-                        if (cuted) {
-
-                        } else {
-
+                            return null;
                         }
-
-
-                        if (clipboard[id]) {
-                            //if (cuted == false){
-
-                            var nodes = changeIds(clipboard[id].nodes, pasteAtMouseLoc, cuted);
-                            var edges = changeIds(clipboard[id].edges, pasteAtMouseLoc, cuted);
-
-                            oldIdToNewId = {};
-                            cy.batch(function () {
-                                res = cy.add(nodes).union(cy.add(edges));
-                                res.select();
-                            });
-
-                        
-                        }
-                        if (options.afterPaste) {
-                            options.afterPaste(res);
-                        }
-                        cy.trigger('pasteClonedElements');
-                        
-                        return res;
                     },
-
+             
                     cut: function (eles, _id) {
-                   
-
+                        cy.clipboard().mouseForsync(cy.$(":selected"));
+                        cuted=false;
+						pasteCuted=true;
                         var id = _id ? _id : getItemId();
                       
                         var descs = eles.nodes().descendants();
@@ -268,12 +291,39 @@
                             options.afterCut(clipboard[id]);
                         }
                         eles.unselect();
+                        cuted=true;
+						pasteCuted=true;
+                        cutedNode=clickedNode;
+                        cy.clipboard().mouseForsync(cy.$(":selected"));
                         return nodes.union(edges);
+                       
+
+                    },
+                    mouseForsync: function(){
+                      
+                      // This fucntion syncs the mouse over with the changes in the nodes
+                       cy.nodes().on('mouseover',  function onmouseover(e) {
+                      
+                        hoveringNode=e.target;
+                       
+                     });
+                     cy.nodes().on('mouseout',  function onmouseout(e) {
+                     
+                        hoveringNode=null;
+                      
+                     });
+                     cy.nodes().on('click',  function clk(e) {
+
+                        clickedNode=e.target;
+                     });
+
 
                     }
                 };
 
                 if (cy.undoRedo) {
+                    cuted=false;
+					pasteCuted=true;
                     ur = cy.undoRedo({}, true);
 
                     ur.action("paste", function (eles) {
@@ -298,11 +348,11 @@
                 }
 
             }
-
+           
             return scratchPad.instance; // return the extension instance
         });
-
-    };
+        
+     };
 
     if (typeof module !== 'undefined' && module.exports) { // expose as a commonjs module
         module.exports = register;
@@ -317,5 +367,5 @@
     if (typeof cytoscape !== 'undefined' && typeof jQuery !== 'undefined') { // expose to global cytoscape (i.e. window.cytoscape)
         register(cytoscape, jQuery);
     }
-
+    
 })();

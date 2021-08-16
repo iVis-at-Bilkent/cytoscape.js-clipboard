@@ -37,8 +37,7 @@
 	</style>
 
 	<script>
-		var cuted=false;
-		var paseCuted=true;
+		
 
 		document.addEventListener('DOMContentLoaded', function(){
 
@@ -50,6 +49,7 @@
 						selector: 'node',
 						style: {
 							'content': 'data(name)'
+							
 						}
 					},
 
@@ -57,6 +57,7 @@
 						selector: 'edge',
 						style: {
 							'target-arrow-shape': 'triangle'
+
 						}
 					},
 
@@ -71,9 +72,14 @@
 				elements: {
 					nodes: [
 						{ data: { id: 'j', name: 'Jerry' } },
+						
+						
 						{ data: { id: 'e', name: 'Elaine' } },
 						{ data: { id: 'k', name: 'Kramer', parent: "e" } },
-						{ data: { id: 'g', name: 'George' } }
+						{ data: { id: 'g', name: 'George' } },
+						{ data: { id: 's', name: 'Sara' } },
+						{ data: { id: 'a', name: 'amy' } },
+						{ data: { id: 'r', name: 'Ross' } }
 					],
 					edges: [
 						{ data: { source: 'j', target: 'e' } },
@@ -94,25 +100,20 @@
 				if (e.ctrlKey && e.target.nodeName === 'BODY')
 					if (e.which == 67) // CTRL + C
 					{   
-						cuted=false;
-						paseCuted=true;
+						
 						cy.clipboard().copy(cy.$(":selected"));
 						
 					}
-					else if (e.which == 86 & cuted==true & paseCuted==true){ // CTRL + V
-							ur.do("paste");
-							cuted=false;
-							paseCuted=false;
-					}
-					else if (e.which == 86 & paseCuted==true){ // CTRL + V
+					
+					else if (e.which == 86 ){ // CTRL + V
+						
 							ur.do("paste");
 						
-							cuted=false;
-							paseCuted=true;
+							
+							
 					}
 					else if (e.which == 65) {
-						cuted=false;
-						paseCuted=true;
+						
 						cy.elements().select();
 						e.preventDefault();
 						
@@ -121,8 +122,7 @@
 						
 						ur.do("cut");
 						
-						cuted=true;
-						paseCuted=true;
+						
 						
 					}	
 			});
