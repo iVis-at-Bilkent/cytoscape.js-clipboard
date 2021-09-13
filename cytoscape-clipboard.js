@@ -15,7 +15,6 @@
 			var cutedNode = [];
 			var cuted = false;
 			var pasteCuted = true;
-			var a = null;
 			var typeIds;
 			cy.on('mousemove', function onmousemove(e) {
 				var pos = e.position || e.cyPosition;
