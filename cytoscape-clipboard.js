@@ -245,7 +245,7 @@
 							}
 
 							cy.clipboard().mouseForsync(cy.$(':selected'));
-
+							console.log(res);
 							return res;
 						} else {
 							return null;
@@ -261,13 +261,18 @@
 						var id = _id ? _id : getItemId();
 						var descs = eles.nodes().descendants();
 						var nodes = eles.nodes().union(descs).filter(':visible');
-						var edges = nodes.edgesWith(nodes).filter(':visible');
-
+						//var edges = nodes.edgesWith(nodes).filter(':visible');
+						var edges = nodes.connectedEdges(id);
+						//var a = eles.edges.data.sources;
+						//console.log(edges.sources());
 						if (options.beforeCut) {
 							options.beforeCut(nodes.union(edges));
 						}
 
 						clipboard[id] = { nodes: nodes.jsons(), edges: edges.jsons() };
+						console.log("cut edges");
+						console.log(clipboard[id]);
+						//console.log(a);
 						eles.remove();
 						if (options.afterCut) {
 							options.afterCut(clipboard[id]);
@@ -284,7 +289,7 @@
 
 							if (typeIds[i].data().parent != null) {
 								temP[i] = typeIds[i].data().parent;
-								console.log(temP[i]);
+
 							} else {
 								k = 1;
 								cutedNode.push(typeIds[i].id());
@@ -299,8 +304,8 @@
 								j1 = j1 + 1;
 							} else {
 								if (cutedNode.includes(typeIds[j1].data().parent) == false)
-									console.log('pushed', typeIds[j1].id());
-								cutedNode.push(typeIds[j1].id());
+
+									cutedNode.push(typeIds[j1].id());
 								j1 = j1 + 1;
 							}
 						}
@@ -332,6 +337,7 @@
 									eles.id,
 									eles.pasteAtMouseLoc,
 									cuted,
+									eles.edges,
 								)
 								: eles.restore();
 						},
