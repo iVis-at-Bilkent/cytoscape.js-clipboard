@@ -27,11 +27,11 @@ Initializes extension & sets options.
 `cb.copy(eles [, id])`
 Copies eles and returns id of operation. If `id` is not specified, it will be assigned automatically.
 
+`cb.cut(eles [,id])'
+Cuts eles, which copies and removes them. If `id` is not specified, it will be assigned automatically.
+
 `cb.paste([id])`
 Pastes the copied elements which has `id`. If `id` is not specified, it will have the last operation's id.
-
-`cb.cut(eles [,id])'
-Cuts eles, which Copies and removes it and returns id of operation. If `id` is not specified, it will be assigned automatically.
 
 ## Default Options
 ```javascript
@@ -49,18 +49,18 @@ Cuts eles, which Copies and removes it and returns id of operation. If `id` is n
                 // Function executed on the clipboard just after the elements are copied.
                 // clipboard is of the form: {nodes: json, edges: json}
                 afterCopy: function(clipboard) {},
+                // Function executed on the collection of elements being cut, before
+                // they are serialized in the clipboard
+                beforeCut: function(eles) {},
+                // Function executed on the clipboard just after the elements are cut.
+                // clipboard is of the form: {nodes: json, edges: json}
+                afterCut: function(clipboard) {},
                 // Function executed on the clipboard right before elements are pasted,
                 // when they are still in the clipboard.
                 beforePaste: function(clipboard) {},
                 // Function executed on the collection of pasted elements, after they
                 // are pasted.
                 afterPaste: function(eles) {}
-				// Function executed on the collection of elements being cut, before
-                // they are serialized in the clipboard
-				beforeCut: function(eles) {},
-				// Function executed on the clipboard just after the elements are cut.
-                // clipboard is of the form: {nodes: json, edges: json}
-				afterCut: function(clipboard) {},
 				
             };
 ```

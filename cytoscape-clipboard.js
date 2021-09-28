@@ -33,13 +33,13 @@
             var options = {
                 beforeCopy: null,
                 afterCopy: null,
-                beforePaste: null,
-                afterPaste: null,
+                beforeCut: null,
                 afterCut: null,
-                beforeCut: null
+                beforePaste: null,
+                afterPaste: null
             };
-            $.extend(true, options, opts);
 
+            $.extend(true, options, opts);
 
             function getScratch() {
                 if (!cy.scratch("_clipboard")) {
