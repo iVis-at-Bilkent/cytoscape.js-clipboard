@@ -8,7 +8,7 @@
 	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
 	<script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
 
-	<script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+	<script src=" https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
 
 	<!-- for testing with local version of cytoscape.js -->
 	<!--<script src="../cytoscape.js/build/cytoscape.js"></script>-->
@@ -71,30 +71,39 @@
 						{ data: { id: 'j', name: 'Jerry' } },
 						{ data: { id: 'e', name: 'Elaine' } },
 						{ data: { id: 'k', name: 'Kramer', parent: "e" } },
-						{ data: { id: 'g', name: 'George' } }
+						{ data: { id: 'g', name: 'George' } },
+						{ data: { id: 's', name: 'Sara', parent: "a"} },
+						{ data: { id: 'a', name: 'Amy', parent: "r"} },
+						{ data: { id: 'r', name: 'Ross' } }
 					],
 					edges: [
 						{ data: { source: 'j', target: 'e' } },
 						{ data: { source: 'j', target: 'k' } },
 						{ data: { source: 'j', target: 'g' } },
 						{ data: { source: 'k', target: 'g' } }
-					]
-				}
+					],
+				},
 			});
 			var ur = cy.undoRedo({
 				undoableDrag: false
 			});
 			var cb = cy.clipboard();
-
+		
 			document.addEventListener("keydown", function (e) {
 				if (e.ctrlKey && e.target.nodeName === 'BODY')
 					if (e.which == 67) // CTRL + C
+					{
 						cy.clipboard().copy(cy.$(":selected"));
-					else if (e.which == 86) // CTRL + V
-							ur.do("paste");
+					}
+					else if (e.which == 86 ){ // CTRL + V
+						ur.do("paste");
+					}
 					else if (e.which == 65) {
 						cy.elements().select();
 						e.preventDefault();
+					}
+					else if(e.which==88){ // CTRL + X //
+						ur.do("cut");
 					}
 			});
 		});
@@ -105,8 +114,9 @@
 <h1>cytoscape-clipboard demo</h1>
 
  <b style="color: darkblue">CTRL+Z</b> to undo, <b style="color: darkblue">CTRL+Y</b> to redo <br/>
+ <b style="color: darkred">CTRL+X</b> to cut
  <b style="color: darkred">CTRL+C</b> to copy, <b style="color: darkred">CTRL+V</b> to paste
-
+ 
 <div id="cy"></div>
 
 </body>

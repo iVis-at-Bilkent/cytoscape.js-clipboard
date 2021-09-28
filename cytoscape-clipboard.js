@@ -1,4 +1,4 @@
-;(function () {
+; (function () {
     'use strict';
 
     // registers the extension on a cytoscape lib ref
@@ -14,27 +14,36 @@
             var cy = this;
 
             //Global variables to hold x and y coordinates in case of pasting
-            var mouseX, mouseY;
-            cy.on('mousemove', function onmousemove (e) {
+            var mouseX, mouseY, hoveringNode, clickedNode;
+            var cutedNode = [];
+            var cuted = false;
+            var pasteCuted = true;
+            var typeIds;
+            cy.on('mousemove', function onmousemove(e) {
                 var pos = e.position || e.cyPosition;
                 mouseX = pos.x;
                 mouseY = pos.y;
+                if (e.target != cy && e.target.isNode()) {
+                    hoveringNode = e.target;
+                } else {
+                    hoveringNode = null;
+                }
             });
-
 
             var options = {
                 beforeCopy: null,
                 afterCopy: null,
+                beforeCut: null,
+                afterCut: null,
                 beforePaste: null,
                 afterPaste: null
             };
 
             $.extend(true, options, opts);
 
-
             function getScratch() {
                 if (!cy.scratch("_clipboard")) {
-                    cy.scratch("_clipboard", { });
+                    cy.scratch("_clipboard", {});
 
                 }
                 return cy.scratch("_clipboard");
@@ -68,13 +77,18 @@
 
             var oldIdToNewId = {};
 
-            function changeIds(jsons, pasteAtMouseLoc) {
+            function changeIds(jsons, pasteAtMouseLoc, cuted) {
                 jsons = $.extend(true, [], jsons);
                 for (var i = 0; i < jsons.length; i++) {
                     var jsonFirst = jsons[i];
-                    var id = getCloneId();
-                    oldIdToNewId[jsonFirst.data.id] = id;
-                    jsonFirst.data.id = id;
+
+                    if (!cuted) {
+                        var id = getCloneId();
+                        oldIdToNewId[jsonFirst.data.id] = id;
+                        jsonFirst.data.id = id;
+                    } else {
+                        var id = jsonFirst.data.id;
+                    }
                 }
 
                 //Paste the elements centered at the mouse location
@@ -83,8 +97,7 @@
                 var centerX, centerY;
                 var diffX, diffY;
                 //Checks only for nodes
-                if (jsons[0] !== undefined && jsons[0].position.x)
-                {
+                if (jsons[0] !== undefined && jsons[0].position.x) {
                     topLeftX = jsons[0].position.x;
                     topLeftY = jsons[0].position.y;
                     bottomRightX = jsons[0].position.x;
@@ -106,29 +119,46 @@
                             bottomRightY = ele.position.y;
                         }
                     }
-                    centerX = (topLeftX+bottomRightX)/2;
-                    centerY = (topLeftY+bottomRightY)/2;
+                    centerX = (topLeftX + bottomRightX) / 2;
+                    centerY = (topLeftY + bottomRightY) / 2;
 
-                    diffX = mouseX -centerX;
+                    diffX = mouseX - centerX;
                     diffY = mouseY - centerY;
                 }
+                if (cuted) {
+                    var visibleNodes = cy.$(':visible');
+                }
+                var temp = [];
+                var count = 0;
 
                 for (var j = 0; j < jsons.length; j++) {
                     var json = jsons[j];
-                    var fields = ["source", "target", "parent"];
+                    var fields = ['source', 'target', 'parent'];
                     for (var k = 0; k < fields.length; k++) {
                         var field = fields[k];
                         if (json.data[field] && oldIdToNewId[json.data[field]])
                             json.data[field] = oldIdToNewId[json.data[field]];
+                    }
 
+                    if (cuted && hoveringNode != null) {
+                        if (json.data['parent'] == null) {
+                            json.data['parent'] = hoveringNode.id();
+                        } else if (
+                            json.data['parent'] != null &&
+                            cutedNode.includes(json.data.id)
+                        ) {
+                            json.data['parent'] = hoveringNode.id();
+                        }
+                    } else if (cuted && hoveringNode == null) {
+                        if (cutedNode.includes(json.data.id)) {
+                            json.data['parent'] = null;
+                        }
                     }
                     if (json.position.x) {
                         if (pasteAtMouseLoc == false) {
                             json.position.x += 50;
                             json.position.y += 50;
-
-                        }
-                        else {
+                        } else {
                             json.position.x += diffX;
                             json.position.y += diffY;
                         }
@@ -136,9 +166,7 @@
                 }
 
                 return jsons;
-
             }
-
             if (!scratchPad.isInitialized) {
                 scratchPad.isInitialized = true;
                 var ur;
@@ -146,54 +174,173 @@
 
                 scratchPad.instance = {
                     copy: function (eles, _id) {
+                        cy.clipboard().mouseForsync(cy.$(':selected'));
+                        cuted = false;
+                        pasteCuted = true;
                         var id = _id ? _id : getItemId();
                         eles.unselect();
                         var descs = eles.nodes().descendants();
                         var nodes = eles.nodes().union(descs).filter(":visible");
                         var edges = nodes.edgesWith(nodes).filter(":visible");
 
-                        if(options.beforeCopy) {
+                        if (options.beforeCopy) {
                             options.beforeCopy(nodes.union(edges));
                         }
-                        clipboard[id] = {nodes: nodes.jsons(), edges: edges.jsons()};
-                        if(options.afterCopy) {
+                        clipboard[id] = { nodes: nodes.jsons(), edges: edges.jsons() };
+                        if (options.afterCopy) {
                             options.afterCopy(clipboard[id]);
                         }
                         return id;
                     },
                     paste: function (_id, pasteAtMouseLoc) {
-                        var id = _id ? _id : getItemId(true);
-                        var res = cy.collection();
-                        if(options.beforePaste) {
-                            options.beforePaste(clipboard[id]);
-                        }
-                        if (clipboard[id]) {
-                            var nodes = changeIds(clipboard[id].nodes, pasteAtMouseLoc);
-                            var edges = changeIds(clipboard[id].edges);
-                            oldIdToNewId = {};
-                            cy.batch(function () {
-                                res = cy.add(nodes).union(cy.add(edges));
-                                res.select();
-                            });
+                        cy.clipboard().mouseForsync(cy.$(':selected'));
+                        if (pasteCuted == true) {
+                            var id = _id ? _id : getItemId(true);
+                            var res = cy.collection();
+                            if (options.beforePaste) {
+                                options.beforePaste(clipboard[id]);
+                            }
 
+                            if (clipboard[id]) {
+                                var nodes = changeIds(
+                                    clipboard[id].nodes,
+                                    pasteAtMouseLoc,
+                                    cuted,
+                                );
+                                var edges = changeIds(
+                                    clipboard[id].edges,
+                                    pasteAtMouseLoc,
+                                    cuted,
+                                );
+
+                                oldIdToNewId = {};
+                                cy.batch(function () {
+                                    res = cy.add(nodes).union(cy.add(edges));
+                                    res.select();
+                                });
+                            }
+                            if (options.afterPaste) {
+                                options.afterPaste(res);
+                            }
+                            cy.trigger('pasteClonedElements');
+                            //res.unselect();
+                            if ((cuted == true) & (pasteCuted == true)) {
+                                cuted = false;
+                                pasteCuted = false;
+                            } else if (pasteCuted == true) {
+                                cuted = false;
+                                pasteCuted = true;
+                            }
+
+                            cy.clipboard().mouseForsync(cy.$(':selected'));
+                            return res;
+                        } else {
+                            return null;
                         }
-                        if(options.afterPaste) {
-                            options.afterPaste(res);
+                    },
+
+                    cut: function (eles, _id) {
+                        cutedNode = [];
+                        cy.clipboard().mouseForsync(cy.$(':selected'));
+                        typeIds = cy.elements('node:selected');
+                        cuted = false;
+                        pasteCuted = true;
+                        var id = _id ? _id : getItemId();
+                        var descs = eles.nodes().descendants();
+                        var nodes = eles.nodes().union(descs).filter(':visible');
+
+                        var edges = nodes.connectedEdges(id);
+
+                        if (options.beforeCut) {
+                            options.beforeCut(nodes.union(edges));
                         }
-                        cy.trigger('pasteClonedElements');
-                        return res;
-                    }
+
+                        clipboard[id] = { nodes: nodes.jsons(), edges: edges.jsons() };
+                        eles.remove();
+                        if (options.afterCut) {
+                            options.afterCut(clipboard[id]);
+                        }
+                        eles.unselect();
+                        cuted = true;
+                        pasteCuted = true;
+                        var i = 0;
+                        var tempC = [];
+                        var temP = [];
+                        var k = 0;
+                        for (let i = 0; i < typeIds.length; i++) {
+                            tempC[i] = typeIds[i].id();
+
+                            if (typeIds[i].data().parent != null) {
+                                temP[i] = typeIds[i].data().parent;
+
+                            } else {
+                                k = 1;
+                                cutedNode.push(typeIds[i].id());
+                            }
+                        }
+
+                        var i1 = 0;
+                        var j1 = 0;
+
+                        while (j1 < temP.length) {
+                            if (tempC.includes(temP[j1])) {
+                                j1 = j1 + 1;
+                            } else {
+                                if (cutedNode.includes(typeIds[j1].data().parent) == false)
+
+                                    cutedNode.push(typeIds[j1].id());
+                                j1 = j1 + 1;
+                            }
+                        }
+
+                        cy.clipboard().mouseForsync(cy.$(':selected'));
+                        return nodes.union(edges);
+                    },
+                    mouseForsync: function () {
+                        // This fucntion syncs the mouse over with the changes in the nodes
+                        cy.nodes().one('mouseover', function onmouseover(e) {
+                            hoveringNode = e.target;
+                        });
+                        cy.nodes().one('mouseout', function onmouseout(e) {
+                            hoveringNode = null;
+                        });
+                    },
                 };
 
                 if (cy.undoRedo) {
+                    cuted = false;
+                    pasteCuted = true;
                     ur = cy.undoRedo({}, true);
-                    ur.action("paste", function (eles) {
-                        return eles.firstTime ? scratchPad.instance.paste(eles.id, eles.pasteAtMouseLoc) : eles.restore();
-                    }, function (eles) {
-                        return eles.remove();
-                    });
-                }
 
+                    ur.action(
+                        'paste',
+                        function (eles) {
+                            return eles.firstTime
+                                ? scratchPad.instance.paste(
+                                    eles.id,
+                                    eles.pasteAtMouseLoc,
+                                    cuted,
+                                    eles.edges,
+                                )
+                                : eles.restore();
+                        },
+                        function (eles) {
+                            return eles.remove();
+                        },
+                    );
+
+                    ur.action(
+                        'cut',
+                        function (eles) {
+                            return eles.firstTime
+                                ? scratchPad.instance.cut(cy.$(':selected'))
+                                : eles.remove();
+                        },
+                        function (eles) {
+                            return eles.restore();
+                        },
+                    );
+                }
             }
 
             return scratchPad.instance; // return the extension instance
