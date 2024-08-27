@@ -8,7 +8,7 @@ A Cytoscape.js extension to provide copy-paste utilities, distributed under [The
 
 Here is a demo:
 <p align="center">
-<a href="https://raw.githack.com/iVis-at-Bilkent/cytoscape.js-clipboard/unstable/demo.html"><img src="https://www.cs.bilkent.edu.tr/~ivis/images/demo1.png" height=42px></a>
+<a href="https://ivis-at-bilkent.github.io/cytoscape.js-clipboard/demo.html"><img src="https://www.cs.bilkent.edu.tr/~ivis/images/demo1.png" height=42px></a>
 </p>
 
 ## API
@@ -27,7 +27,7 @@ Initializes extension & sets options.
 `cb.copy(eles [, id])`
 Copies eles and returns id of operation. If `id` is not specified, it will be assigned automatically.
 
-`cb.cut(eles [,id])'
+`cb.cut(eles [, id])`
 Cuts eles, which copies and removes them. If `id` is not specified, it will be assigned automatically.
 
 `cb.paste([id])`
