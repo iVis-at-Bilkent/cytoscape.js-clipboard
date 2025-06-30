@@ -36,7 +36,9 @@
                 beforeCut: null,
                 afterCut: null,
                 beforePaste: null,
-                afterPaste: null
+                afterPaste: null,
+                nodePrefix: undefined,
+                edgePrefix: undefined
             };
 
             $.extend(true, options, opts);
@@ -65,13 +67,23 @@
                     s4() + '-' + s4() + s4() + s4();
             }
 
+            // return node id
+            function getNodeId() {
+                return options.nodePrefix ? options.nodePrefix + guid() : guid();
+            }
+
+            // return edge id
+            function getEdgeId() {
+                return options.edgePrefix ? options.edgePrefix + guid() : guid();
+            }
 
             function getItemId(last) {
                 return last ? "item_" + counter : "item_" + (++counter);
             }
 
-            function getCloneId() {
-                return guid();
+            // return a unique id for a cloned node or edge based on its group type
+            function getCloneId(elementType) {
+                return elementType === "nodes" ? getNodeId() : getEdgeId();
             }
 
 
@@ -83,7 +95,7 @@
                     var jsonFirst = jsons[i];
 
                     if (!cuted) {
-                        var id = getCloneId();
+                        var id = getCloneId(jsonFirst.group);
                         oldIdToNewId[jsonFirst.data.id] = id;
                         jsonFirst.data.id = id;
                     } else {

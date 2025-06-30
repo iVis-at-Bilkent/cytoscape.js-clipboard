@@ -37,10 +37,10 @@ Pastes the copied elements which has `id`. If `id` is not specified, it will hav
 ```javascript
             var options = {
 
-                // The following 4 options allow the user to provide custom behavior to
+                // The following 6 options allow the user to provide custom behavior to
                 // the extension. They can be used to maintain consistency of some data
                 // when elements are duplicated.
-                // These 4 options are set to null by default. The function prototypes
+                // These 6 options are set to null by default. The function prototypes
                 // are provided below for explanation purpose only.
 
                 // Function executed on the collection of elements being copied, before
@@ -60,7 +60,13 @@ Pastes the copied elements which has `id`. If `id` is not specified, it will hav
                 beforePaste: function(clipboard) {},
                 // Function executed on the collection of pasted elements, after they
                 // are pasted.
-                afterPaste: function(eles) {}
+                afterPaste: function(eles) {},
+                // Optional prefix to add to the IDs of pasted nodes (string).
+                // If not provided, node IDs will be generated without a prefix.
+                nodePrefix: "",
+                // Optional prefix to add to the IDs of pasted edges (string).
+                // If not provided, edge IDs will be generated without a prefix.
+                edgePrefix: "",
 				
             };
 ```
